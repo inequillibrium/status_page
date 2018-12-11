@@ -1,0 +1,110 @@
+<html>
+
+<head>
+    <title>Status</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/d3.layout.min.js"></script>
+    <script src="js/rickshaw.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1 class="title">NHI (Node Health Information)</h1>
+    </header>
+    <main>
+        <h2 class="graphs-title">Overview Node: #<span id="id">1</span></h2>
+        <div id="cpu-container" class="c-g">
+            <!-- Append graph here -->
+        </div>
+        <div id="ram-container" class="c-g">
+
+        </div>
+    </main>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        const loadData = () => {
+            fetch('http://localhost:3000/ping')
+                .then(response => {
+                    if (response.status !== 200) {
+
+                    }
+                    return response;
+                })
+                .then(response => response.json())
+                .then(parsedResponse => {
+                    
+                })
+                .catch(error => console.log(error));
+            fetch('http://localhost:3000/delta/cpu')
+                .then(response => {
+                    if (response.status !== 200) {
+                        console.log(response);
+                    }
+                    return response;
+                })
+                .then(response => response.json())
+                .then(parsedResponse => {
+                    const unpackData = (arr, key) => {
+                        return arr.map(obj => obj[key])
+                    }
+                    const firstTrace = {
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'CPU Usage',
+                        x: unpackData(parsedResponse, 'time'),
+                        y: unpackData(parsedResponse, 'duration'),
+                        line: {
+                            color: '#17BECF'
+                        }
+                    }
+                    const data = [firstTrace];
+                    const layout = {
+                        title: 'CPU Usage (%)',
+                    };
+                    return Plotly.newPlot('cpu-container', data, layout);
+                })
+                .catch(error => console.log(error));
+
+            fetch('http://localhost:3000/delta/ram')
+                .then(response => {
+                    if (response.status !== 200) {
+                        console.log(response);
+                    }
+                    return response;
+                })
+                .then(response => response.json())
+                .then(parsedResponse => {
+                    const unpackData = (arr, key) => {
+                        return arr.map(obj => obj[key])
+                    }
+                    const firstTrace = {
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'RAM Usage',
+                        x: unpackData(parsedResponse, 'time'),
+                        y: unpackData(parsedResponse, 'percentage'),
+                        line: {
+                            color: '#17BECF'
+                        }
+                    }
+                    const data = [firstTrace];
+                    const layout = {
+                        title: 'RAM Usage (%)',
+                    };
+                    return Plotly.newPlot('ram-container', data, layout);
+                })
+                .catch(error => console.log(error));
+        }
+
+        $(window).on('load', loadData);
+        setInterval(() => {
+            loadData();
+        }, 1000);
+    </script>
+</body>
+
+</html>
