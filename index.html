@@ -17,11 +17,11 @@
     <main>
         <h2 class="graphs-title">Overview Node: #<span id="id">1</span></h2>
         <select id="sourceBox" onchange="changeSource();">
-                <option value="delta">delta</option>
-                <option value="host1">host1</option>
-                <option value="host2">host2</option>
-                <option value="host3">host3</option>
-              </select>
+            <option value="delta">delta</option>
+            <option value="host1">host1</option>
+            <option value="host2">host2</option>
+            <option value="host3">host3</option>
+        </select>
         <div id="cpu-container" class="c-g">
             <!-- Append graph here -->
         </div>
@@ -32,7 +32,6 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-
         var source = "delta";
 
         const changeSource = () => {
@@ -42,6 +41,8 @@
             document.getElementById('id').innerText = newsource;
             loadData();
         }
+
+        var offline = false;
 
         const loadData = () => {
             fetch('http://localhost:3000/ping')
@@ -53,74 +54,77 @@
                 })
                 .then(response => response.json())
                 .then(parsedResponse => {
-                    
+                    if ((parsedResponse.ping !== "pong")) {
+                        offline = true;
+                    }
                 })
                 .catch(error => console.log(error));
-            fetch('http://localhost:3000/' + source + '/cpu')
-                .then(response => {
-                    if (response.status !== 200) {
-                        console.log(response);
-                    }
-                    return response;
-                })
-                .then(response => response.json())
-                .then(parsedResponse => {
-                    const unpackData = (arr, key) => {
-                        return arr.map(obj => obj[key])
-                    }
-                    const firstTrace = {
-                        type: 'scatter',
-                        mode: 'lines',
-                        name: 'CPU Usage',
-                        x: unpackData(parsedResponse, 'time'),
-                        y: unpackData(parsedResponse, 'duration'),
-                        line: {
-                            color: '#17BECF'
+            if (!offline) {
+                fetch('http://localhost:3000/' + source + '/cpu')
+                    .then(response => {
+                        if (response.status !== 200) {
+                            console.log(response);
                         }
-                    }
-                    const data = [firstTrace];
-                    const layout = {
-                        title: 'CPU Usage (%)',
-                    };
-                    return Plotly.newPlot('cpu-container', data, layout);
-                })
-                .catch(error => console.log(error));
+                        return response;
+                    })
+                    .then(response => response.json())
+                    .then(parsedResponse => {
+                        const unpackData = (arr, key) => {
+                            return arr.map(obj => obj[key])
+                        }
+                        const firstTrace = {
+                            type: 'scatter',
+                            mode: 'lines',
+                            name: 'CPU Usage',
+                            x: unpackData(parsedResponse, 'time'),
+                            y: unpackData(parsedResponse, 'duration'),
+                            line: {
+                                color: '#17BECF'
+                            }
+                        }
+                        const data = [firstTrace];
+                        const layout = {
+                            title: 'CPU Usage (%)',
+                        };
+                        return Plotly.newPlot('cpu-container', data, layout);
+                    })
+                    .catch(error => console.log(error));
 
-            fetch('http://localhost:3000/' + source + '/ram')
-                .then(response => {
-                    if (response.status !== 200) {
-                        console.log(response);
-                    }
-                    return response;
-                })
-                .then(response => response.json())
-                .then(parsedResponse => {
-                    const unpackData = (arr, key) => {
-                        return arr.map(obj => obj[key])
-                    }
-                    const firstTrace = {
-                        type: 'scatter',
-                        mode: 'lines',
-                        name: 'RAM Usage',
-                        x: unpackData(parsedResponse, 'time'),
-                        y: unpackData(parsedResponse, 'percentage'),
-                        line: {
-                            color: '#17BECF'
+                fetch('http://localhost:3000/' + source + '/ram')
+                    .then(response => {
+                        if (response.status !== 200) {
+                            console.log(response);
                         }
-                    }
-                    const data = [firstTrace];
-                    const layout = {
-                        title: 'RAM Usage (%)',
-                    };
-                    return Plotly.newPlot('ram-container', data, layout);
-                })
-                .catch(error => console.log(error));
+                        return response;
+                    })
+                    .then(response => response.json())
+                    .then(parsedResponse => {
+                        const unpackData = (arr, key) => {
+                            return arr.map(obj => obj[key])
+                        }
+                        const firstTrace = {
+                            type: 'scatter',
+                            mode: 'lines',
+                            name: 'RAM Usage',
+                            x: unpackData(parsedResponse, 'time'),
+                            y: unpackData(parsedResponse, 'percentage'),
+                            line: {
+                                color: '#17BECF'
+                            }
+                        }
+                        const data = [firstTrace];
+                        const layout = {
+                            title: 'RAM Usage (%)',
+                        };
+                        return Plotly.newPlot('ram-container', data, layout);
+                    })
+                    .catch(error => console.log(error));
+            }
         }
 
-        $(window).on('load', loadData);
-        setInterval(() => {
-            loadData();
-        }, 1000);
+        loadData();
+
+        setInterval(loadData, 5000);
     </script>
 </body>
 
