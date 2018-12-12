@@ -28,6 +28,9 @@
         <div id="ram-container" class="c-g">
 
         </div>
+        <div id="bots-container" class="c-g">
+
+            </div>
     </main>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -117,6 +120,36 @@
                             title: 'RAM Usage (%)',
                         };
                         return Plotly.newPlot('ram-container', data, layout);
+                    })
+                    .catch(error => console.log(error));
+
+                fetch('http://localhost:3000/' + source + '/bots')
+                    .then(response => {
+                        if (response.status !== 200) {
+                            console.log(response);
+                        }
+                        return response;
+                    })
+                    .then(response => response.json())
+                    .then(parsedResponse => {
+                        const unpackData = (arr, key) => {
+                            return arr.map(obj => obj[key])
+                        }
+                        const firstTrace = {
+                            type: 'scatter',
+                            mode: 'lines',
+                            name: 'Bots running',
+                            x: unpackData(parsedResponse, 'time'),
+                            y: unpackData(parsedResponse, 'total'),
+                            line: {
+                                color: '#17BECF'
+                            }
+                        }
+                        const data = [firstTrace];
+                        const layout = {
+                            title: 'Bots running (%)',
+                        };
+                        return Plotly.newPlot('bots-container', data, layout);
                     })
                     .catch(error => console.log(error));
             }
