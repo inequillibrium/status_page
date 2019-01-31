@@ -1,6 +1,6 @@
 # Status Page 
-![License](https://img.shields.io/github/license/inequillibrium/master.svg?style=flat-square)
-![Issues](https://img.shields.io/github/issues/inequillibrium/master.svg?style=flat-square)
+![License](https://img.shields.io/github/license/inequillibrium/status_page.svg?style=flat-square)
+![Issues](https://img.shields.io/github/issues/inequillibrium/status_page.svg?style=flat-square)
 
 Simple status page with graphs.
 ![Example screenshot](https://raw.githubusercontent.com/inequillibrium/status_page/master/imgs/screen.png)
