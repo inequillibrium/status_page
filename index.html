@@ -14,26 +14,22 @@
     <header>
         <h1 class="title">NHI (Node Health Information)</h1>
     </header>
+    
     <main>
         <h2 class="graphs-title">Overview Node: #<span id="id">1</span></h2>
-        <select id="sourceBox" onchange="changeSource();">
-            <option value="delta">delta</option>
+        <select id="sourceBox" onchange="changeSource();" style="height: 25px !important;">
+            <option value="delta" selected>delta</option>
             <option value="host1">host1</option>
             <option value="host2">host2</option>
             <option value="host3">host3</option>
         </select>
-        <div id="cpu-container" class="c-g">
-            <!-- Append graph here -->
-        </div>
-        <div id="ram-container" class="c-g">
+        <br>
+        <div id="cpu-container" class="c-g"></div>
+        <div id="ram-container" class="c-g"></div>
+        <div id="bots-container" class="c-g"></div>
 
-        </div>
-        <div id="bots-container" class="c-g">
-
-            </div>
     </main>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
         var source = "delta";
 
